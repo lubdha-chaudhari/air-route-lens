@@ -26,7 +26,7 @@ export function MetricCard({ title, value, subtitle, icon: Icon, variant = "defa
   };
 
   return (
-    <Card className={cn("border-2", variantStyles[variant])}>
+    <Card className={cn("border-2 glass glow transition-all hover:scale-105 hover:shadow-glow-strong", variantStyles[variant])}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}

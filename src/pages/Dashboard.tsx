@@ -1,4 +1,5 @@
 import { MetricCard } from "@/components/MetricCard";
+import { TechGrid } from "@/components/TechGrid";
 import { Wind, Navigation2, Fuel, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,13 +7,17 @@ import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   return (
-    <div className="space-y-6 animate-in fade-in-50 duration-500">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Traffic & Environmental Dashboard</h1>
+    <div className="relative space-y-6 animate-in fade-in-50 duration-500">
+      <TechGrid />
+      
+      <div className="relative z-10">
+        <h1 className="text-3xl font-bold tracking-tight text-primary drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]">
+          Traffic & Environmental Dashboard
+        </h1>
         <p className="text-muted-foreground mt-1">Real-time monitoring of traffic congestion and air quality</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 relative z-10">
         <MetricCard
           title="Average AQI"
           value="175"
@@ -43,8 +48,8 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 border-2">
+      <div className="grid gap-6 lg:grid-cols-3 relative z-10">
+        <Card className="lg:col-span-2 border-2 glass glow">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -58,13 +63,15 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="aspect-video bg-gradient-to-br from-accent/50 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Navigation2 className="h-12 w-12 text-primary mx-auto" />
-                <p className="text-sm text-muted-foreground max-w-md">
+            <div className="relative aspect-video bg-gradient-to-br from-accent to-muted/20 rounded-lg border-2 border-primary/30 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 grid-pattern opacity-30" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+              <div className="relative z-10 text-center space-y-2">
+                <Navigation2 className="h-12 w-12 text-primary mx-auto animate-pulse-glow" />
+                <p className="text-sm text-foreground max-w-md font-medium">
                   TomTom map integration will be displayed here
                   <br />
-                  <span className="text-xs">Showing traffic flow, AQI heatmap, and environmental stress zones</span>
+                  <span className="text-xs text-muted-foreground">Showing traffic flow, AQI heatmap, and environmental stress zones</span>
                 </p>
               </div>
             </div>
@@ -86,7 +93,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-2">
+        <Card className="border-2 glass glow">
           <CardHeader>
             <CardTitle>Quick Stats</CardTitle>
             <CardDescription>Today's environmental metrics</CardDescription>
@@ -123,7 +130,7 @@ export default function Dashboard() {
             </div>
 
             <div className="pt-4 border-t">
-              <Button className="w-full bg-gradient-primary hover:opacity-90">
+              <Button className="w-full bg-gradient-primary hover:opacity-90 shadow-glow transition-all hover:shadow-glow-strong">
                 View Detailed Report
               </Button>
             </div>
@@ -131,7 +138,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <Card className="border-2 border-warning/30 bg-warning/5">
+      <Card className="border-2 border-warning/30 bg-warning/5 glass relative z-10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-warning" />

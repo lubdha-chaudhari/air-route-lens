@@ -25,10 +25,10 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="glass-strong border-r-2 border-primary/20">
       <SidebarContent>
         <div className="p-4 border-b border-sidebar-border">
-          <h2 className={`font-bold text-sidebar-primary transition-all ${isCollapsed ? 'text-center text-lg' : 'text-xl'}`}>
+          <h2 className={`font-bold text-sidebar-primary transition-all drop-shadow-[0_0_10px_rgba(74,222,128,0.5)] ${isCollapsed ? 'text-center text-lg' : 'text-xl'}`}>
             {isCollapsed ? '🌍' : '🌍 GeoSense'}
           </h2>
           {!isCollapsed && (
