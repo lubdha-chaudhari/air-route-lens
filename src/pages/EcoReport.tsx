@@ -2,6 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Download, TrendingDown, MapPin, Leaf } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export default function EcoReport() {
   const topPollutedAreas = [
@@ -11,6 +20,39 @@ export default function EcoReport() {
     { name: "Airport Road", aqi: 165, congestion: 68, emissions: 5.4 },
     { name: "Cyber City", aqi: 158, congestion: 65, emissions: 5.1 },
   ];
+
+  const sourceBreakdown = [
+    { name: "Vehicles", value: 58 },
+    { name: "Industry", value: 22 },
+    { name: "Construction", value: 12 },
+    { name: "Others", value: 8 },
+  ];
+
+  const pieConfig: ChartConfig = {
+    Vehicles: { label: "Vehicles", color: "hsl(0 84% 60%)" },
+    Industry: { label: "Industry", color: "hsl(221 83% 53%)" },
+    Construction: { label: "Construction", color: "hsl(38 92% 50%)" },
+    Others: { label: "Others", color: "hsl(142 72% 45%)" },
+  };
+
+  const monthlyAqi = [
+    { month: "Jan", aqi: 162 },
+    { month: "Feb", aqi: 155 },
+    { month: "Mar", aqi: 172 },
+    { month: "Apr", aqi: 165 },
+    { month: "May", aqi: 178 },
+    { month: "Jun", aqi: 160 },
+    { month: "Jul", aqi: 148 },
+    { month: "Aug", aqi: 150 },
+    { month: "Sep", aqi: 170 },
+    { month: "Oct", aqi: 190 },
+    { month: "Nov", aqi: 210 },
+    { month: "Dec", aqi: 185 },
+  ];
+
+  const monthlyConfig: ChartConfig = {
+    aqi: { label: "Avg AQI", color: "hsl(280 72% 60%)" },
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
@@ -116,13 +158,17 @@ export default function EcoReport() {
             <CardDescription>Contribution by source</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <Leaf className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm">Pie chart: Pollution sources</p>
-                <p className="text-xs mt-1">Vehicles, Industry, Construction</p>
-              </div>
-            </div>
+            <ChartContainer config={pieConfig} className="h-[300px]">
+              <PieChart>
+                <Pie data={sourceBreakdown} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100}>
+                  {sourceBreakdown.map((entry) => (
+                    <Cell key={entry.name} fill={`var(--color-${entry.name})`} />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
+                <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+              </PieChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
@@ -132,13 +178,21 @@ export default function EcoReport() {
             <CardDescription>Average AQI over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <TrendingDown className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm">Area chart: Monthly AQI average</p>
-                <p className="text-xs mt-1">Shows seasonal patterns</p>
-              </div>
-            </div>
+            <ChartContainer config={monthlyConfig} className="h-[300px]">
+              <AreaChart data={monthlyAqi}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area
+                  type="monotone"
+                  dataKey="aqi"
+                  stroke="var(--color-aqi)"
+                  fill="var(--color-aqi)"
+                  fillOpacity={0.2}
+                />
+              </AreaChart>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>

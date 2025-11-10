@@ -2,6 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, TrendingUp, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export default function Predictions() {
   const predictions = [
@@ -63,13 +72,19 @@ export default function Predictions() {
           <CardDescription>Delhi NCR • Updated 2 minutes ago</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[280px] bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center mb-6">
-            <div className="text-center text-muted-foreground">
-              <TrendingUp className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <p className="text-sm">Line chart: Predicted AQI trend</p>
-              <p className="text-xs mt-1">ML model forecast visualization</p>
-            </div>
-          </div>
+          <ChartContainer
+            config={{ aqi: { label: "AQI", color: "hsl(0 84% 60%)" } } as ChartConfig}
+            className="h-[280px] mb-6"
+          >
+            <LineChart data={predictions.map(p => ({ time: p.time, aqi: p.aqi }))}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Line type="monotone" dataKey="aqi" stroke="var(--color-aqi)" strokeWidth={2} dot />
+              <ChartLegend content={<ChartLegendContent />} />
+            </LineChart>
+          </ChartContainer>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {predictions.map((pred, idx) => (

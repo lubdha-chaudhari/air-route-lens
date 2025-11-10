@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Navigation, Leaf, Clock, Wind, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useRef } from "react";
+import tt from "@tomtom-international/web-sdk-maps";
+import "@tomtom-international/web-sdk-maps/dist/maps.css";
 
 export default function Routes() {
   const routes = [
@@ -34,6 +37,113 @@ export default function Routes() {
       recommended: false,
     },
   ];
+
+  // Inline mini map component for each route card
+  function RouteMiniMap({ variant }: { variant: "destructive" | "success" | "warning" }) {
+    const mapRef = useRef<HTMLDivElement | null>(null);
+    const mapInstance = useRef<tt.Map | null>(null);
+
+    useEffect(() => {
+      if (mapInstance.current) return;
+
+      const API_KEY = (import.meta as any).env?.VITE_TOMTOM_API_KEY || "AzGEUMVIRRspEdOPAtDny0QaYBIDAR9G";
+      if (!API_KEY) return;
+
+      // Simple mock paths around Delhi (lng, lat)
+      const start: [number, number] = [77.2090, 28.6139]; // CP
+      const end: [number, number] = [77.1025, 28.5562]; // IGI Airport
+
+      const fastestPath: [number, number][] = [
+        start,
+        [77.196, 28.600],
+        [77.170, 28.590],
+        [77.150, 28.575],
+        end,
+      ];
+
+      const ecoPath: [number, number][] = [
+        start,
+        [77.220, 28.620],
+        [77.210, 28.590],
+        [77.170, 28.565],
+        [77.135, 28.560],
+        end,
+      ];
+
+      const balancedPath: [number, number][] = [
+        start,
+        [77.205, 28.605],
+        [77.185, 28.590],
+        [77.165, 28.575],
+        end,
+      ];
+
+      const path =
+        variant === "success" ? ecoPath : variant === "warning" ? balancedPath : fastestPath;
+
+      const mid = path[Math.floor(path.length / 2)];
+
+      mapInstance.current = tt.map({
+        key: API_KEY,
+        container: mapRef.current as HTMLDivElement,
+        center: mid,
+        zoom: 11,
+        style: { map: "basic_main" },
+        dragPan: false,
+        scrollZoom: "center",
+        interactive: false,
+      });
+
+      // draw route
+      mapInstance.current.on("load", () => {
+        const sourceId = `route-${variant}`;
+        if (mapInstance.current?.getSource(sourceId)) return;
+
+        mapInstance.current?.addSource(sourceId, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "LineString",
+              coordinates: path,
+            },
+            properties: {},
+          },
+        } as any);
+
+        const color =
+          variant === "success"
+            ? "#16a34a"
+            : variant === "warning"
+            ? "#f59e0b"
+            : "#ef4444";
+
+        mapInstance.current?.addLayer({
+          id: `${sourceId}-layer`,
+          type: "line",
+          source: sourceId,
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": color, "line-width": 5, "line-opacity": 0.9 },
+        });
+
+        // Start and end markers
+        new (tt as any).Marker({ color: "#2563eb" }).setLngLat(start).addTo(mapInstance.current as any);
+        new (tt as any).Marker({ color: "#9333ea" }).setLngLat(end).addTo(mapInstance.current as any);
+      });
+
+      return () => {
+        mapInstance.current && mapInstance.current.remove();
+      };
+    }, [variant]);
+
+    return (
+      <div
+        ref={mapRef}
+        className="w-full rounded-md overflow-hidden border"
+        style={{ height: 140 }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
@@ -127,12 +237,9 @@ export default function Routes() {
                   </div>
                 </div>
               </div>
-              
-              <div className="h-32 bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center mb-4">
-                <div className="text-center text-muted-foreground">
-                  <Navigation className="h-6 w-6 mx-auto mb-1 text-primary" />
-                  <p className="text-xs">Route visualization with TomTom Maps</p>
-                </div>
+
+              <div className="mb-4">
+                <RouteMiniMap variant={route.variant as any} />
               </div>
 
               <div className="flex gap-2">

@@ -1,22 +1,34 @@
+"use client";
 import { MetricCard } from "@/components/MetricCard";
 import { TechGrid } from "@/components/TechGrid";
 import { Wind, Navigation2, Fuel, AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LiveMap } from "@/components/LiveMap";
 
 export default function Dashboard() {
   return (
     <div className="relative space-y-6 animate-in fade-in-50 duration-500">
       <TechGrid />
-      
+
+      {/* Header */}
       <div className="relative z-10">
         <h1 className="text-3xl font-bold tracking-tight text-primary drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]">
           Traffic & Environmental Dashboard
         </h1>
-        <p className="text-muted-foreground mt-1">Real-time monitoring of traffic congestion and air quality</p>
+        <p className="text-muted-foreground mt-1">
+          Real-time monitoring of traffic congestion and air quality
+        </p>
       </div>
 
+      {/* Metric Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 relative z-10">
         <MetricCard
           title="Average AQI"
@@ -48,34 +60,42 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Live Map + Quick Stats */}
       <div className="grid gap-6 lg:grid-cols-3 relative z-10">
+        {/* Live Map Section */}
         <Card className="lg:col-span-2 border-2 glass glow">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>Live Map View</CardTitle>
-                <CardDescription>Interactive traffic and pollution visualization</CardDescription>
+                <CardDescription>
+                  Interactive traffic and pollution visualization
+                </CardDescription>
               </div>
               <div className="flex gap-2">
-                <Badge variant="outline" className="bg-success/10 text-success border-success/30">Traffic</Badge>
-                <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">AQI</Badge>
+                <Badge
+                  variant="outline"
+                  className="bg-success/10 text-success border-success/30"
+                >
+                  Traffic
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="bg-destructive/10 text-destructive border-destructive/30"
+                >
+                  AQI
+                </Badge>
               </div>
             </div>
           </CardHeader>
+
           <CardContent>
-            <div className="relative aspect-video bg-gradient-to-br from-accent to-muted/20 rounded-lg border-2 border-primary/30 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 grid-pattern opacity-30" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-              <div className="relative z-10 text-center space-y-2">
-                <Navigation2 className="h-12 w-12 text-primary mx-auto animate-pulse-glow" />
-                <p className="text-sm text-foreground max-w-md font-medium">
-                  TomTom map integration will be displayed here
-                  <br />
-                  <span className="text-xs text-muted-foreground">Showing traffic flow, AQI heatmap, and environmental stress zones</span>
-                </p>
-              </div>
+            {/* ✅ Live Map Component Here */}
+            <div className="relative aspect-video rounded-lg overflow-hidden border-2 border-primary/30">
+              <LiveMap />
             </div>
-            
+
+            {/* Legend Buttons */}
             <div className="mt-4 flex flex-wrap gap-2">
               <Button variant="outline" size="sm">
                 <div className="w-3 h-3 rounded-full bg-success mr-2" />
@@ -93,12 +113,14 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
+        {/* Quick Stats Section */}
         <Card className="border-2 glass glow">
           <CardHeader>
             <CardTitle>Quick Stats</CardTitle>
             <CardDescription>Today's environmental metrics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* PM2.5 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">PM2.5 Level</span>
@@ -109,6 +131,7 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* NO2 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">NO₂ Concentration</span>
@@ -119,16 +142,20 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* CO2 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">CO₂ Emissions</span>
-                <span className="font-semibold text-foreground">5.2 tons/day</span>
+                <span className="font-semibold text-foreground">
+                  5.2 tons/day
+                </span>
               </div>
               <div className="h-2 bg-secondary rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-primary w-2/3" />
               </div>
             </div>
 
+            {/* Button */}
             <div className="pt-4 border-t">
               <Button className="w-full bg-gradient-primary hover:opacity-90 shadow-glow transition-all hover:shadow-glow-strong">
                 View Detailed Report
@@ -138,6 +165,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* Alerts Section */}
       <Card className="border-2 border-warning/30 bg-warning/5 glass relative z-10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -151,21 +179,27 @@ export default function Dashboard() {
               <div className="w-2 h-2 rounded-full bg-destructive mt-2" />
               <div className="flex-1">
                 <p className="font-medium">MG Road - Critical AQI Level</p>
-                <p className="text-sm text-muted-foreground">AQI: 245 • 82% Traffic Congestion • Avoid during 6-8 PM</p>
+                <p className="text-sm text-muted-foreground">
+                  AQI: 245 • 82% Traffic Congestion • Avoid during 6-8 PM
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3 rounded-lg bg-card border">
               <div className="w-2 h-2 rounded-full bg-warning mt-2" />
               <div className="flex-1">
                 <p className="font-medium">Ring Road - High NO₂ Levels</p>
-                <p className="text-sm text-muted-foreground">AQI: 182 • 78% Traffic Congestion • Use alternate routes</p>
+                <p className="text-sm text-muted-foreground">
+                  AQI: 182 • 78% Traffic Congestion • Use alternate routes
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3 rounded-lg bg-card border">
               <div className="w-2 h-2 rounded-full bg-warning mt-2" />
               <div className="flex-1">
                 <p className="font-medium">NH-8 Corridor - Elevated Emissions</p>
-                <p className="text-sm text-muted-foreground">AQI: 156 • Expected to worsen during evening</p>
+                <p className="text-sm text-muted-foreground">
+                  AQI: 156 • Expected to worsen during evening
+                </p>
               </div>
             </div>
           </div>

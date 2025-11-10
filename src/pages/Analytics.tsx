@@ -2,8 +2,65 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, Activity } from "lucide-react";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+} from "recharts";
 
 export default function Analytics() {
+  // Hardcoded prototype data
+  const weeklyTrend = [
+    { day: "Mon", aqi: 150, speed: 34 },
+    { day: "Tue", aqi: 162, speed: 32 },
+    { day: "Wed", aqi: 170, speed: 28 },
+    { day: "Thu", aqi: 180, speed: 26 },
+    { day: "Fri", aqi: 192, speed: 24 },
+    { day: "Sat", aqi: 140, speed: 36 },
+    { day: "Sun", aqi: 132, speed: 38 },
+  ];
+
+  const congestionFuel = [
+    { label: "Zone A", congestion: 65, fuel: 120 },
+    { label: "Zone B", congestion: 72, fuel: 145 },
+    { label: "Zone C", congestion: 58, fuel: 98 },
+    { label: "Zone D", congestion: 80, fuel: 168 },
+    { label: "Zone E", congestion: 69, fuel: 132 },
+  ];
+
+  const hourlyAqi = Array.from({ length: 24 }).map((_, i) => ({
+    hour: `${i}:00`,
+    aqi: Math.round(120 + 80 * Math.sin((i / 24) * Math.PI * 2) + (i > 7 && i < 10 ? 40 : 0)),
+  }));
+
+  const correlationConfig: ChartConfig = {
+    aqi: { label: "AQI", color: "hsl(0 84% 60%)" },
+    speed: { label: "Avg Speed (km/h)", color: "hsl(221 83% 53%)" },
+  };
+
+  const barConfig: ChartConfig = {
+    congestion: { label: "Congestion %", color: "hsl(38 92% 50%)" },
+    fuel: { label: "Fuel Wasted (L)", color: "hsl(142 72% 45%)" },
+  };
+
+  const areaConfig: ChartConfig = {
+    aqi: { label: "AQI", color: "hsl(280 72% 60%)" },
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
       <div className="flex items-center justify-between">
@@ -83,13 +140,17 @@ export default function Analytics() {
             <CardDescription>Weekly trend analysis</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <Activity className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm">Line chart: AQI & Traffic Speed over time</p>
-                <p className="text-xs mt-1">Chart.js integration</p>
-              </div>
-            </div>
+            <ChartContainer config={correlationConfig} className="h-[300px]">
+              <LineChart data={weeklyTrend}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line type="monotone" dataKey="aqi" stroke="var(--color-aqi)" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="speed" stroke="var(--color-speed)" strokeWidth={2} dot={false} />
+                <ChartLegend content={<ChartLegendContent />} />
+              </LineChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
@@ -99,13 +160,17 @@ export default function Analytics() {
             <CardDescription>Daily average comparison</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <Activity className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm">Bar chart: Traffic vs Fuel Wastage</p>
-                <p className="text-xs mt-1">Recharts integration</p>
-              </div>
-            </div>
+            <ChartContainer config={barConfig} className="h-[300px]">
+              <BarChart data={congestionFuel}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="label" />
+                <YAxis />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="congestion" fill="var(--color-congestion)" radius={4} />
+                <Bar dataKey="fuel" fill="var(--color-fuel)" radius={4} />
+                <ChartLegend content={<ChartLegendContent />} />
+              </BarChart>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>
@@ -116,13 +181,21 @@ export default function Analytics() {
           <CardDescription>24-hour pollution pattern analysis for Delhi</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[250px] bg-gradient-to-br from-accent/30 to-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
-              <Activity className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <p className="text-sm">Area chart: Hourly AQI levels</p>
-              <p className="text-xs mt-1">Shows peak pollution hours</p>
-            </div>
-          </div>
+          <ChartContainer config={areaConfig} className="h-[250px]">
+            <AreaChart data={hourlyAqi}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="hour" />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type="monotone"
+                dataKey="aqi"
+                stroke="var(--color-aqi)"
+                fill="var(--color-aqi)"
+                fillOpacity={0.2}
+              />
+            </AreaChart>
+          </ChartContainer>
         </CardContent>
       </Card>
 
