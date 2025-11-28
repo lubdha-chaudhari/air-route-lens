@@ -10,6 +10,7 @@ import Predictions from "./pages/Predictions";
 import EcoReport from "./pages/EcoReport";
 import GreenRoutes from "./pages/GreenRoutes";
 import NotFound from "./pages/NotFound";
+import { LocationProvider } from "./contexts/LocationContext";
 
 const queryClient = new QueryClient();
 
@@ -18,19 +19,21 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/predictions" element={<Predictions />} />
-            <Route path="/eco-report" element={<EcoReport />} />
-            <Route path="/routes" element={<GreenRoutes />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
+      <LocationProvider>
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/predictions" element={<Predictions />} />
+              <Route path="/eco-report" element={<EcoReport />} />
+              <Route path="/routes" element={<GreenRoutes />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </LocationProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

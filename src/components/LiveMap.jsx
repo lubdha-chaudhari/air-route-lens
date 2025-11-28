@@ -3,12 +3,14 @@
 import { useEffect, useRef } from "react";
 import tt from "@tomtom-international/web-sdk-maps";
 import "@tomtom-international/web-sdk-maps/dist/maps.css";
+import { useLocation } from "@/contexts/LocationContext";
 
 export function LiveMap() {
   const mapElement = useRef(null);
   const map = useRef(null);
   const userMarker = useRef(null);
   const watchIdRef = useRef(null);
+  const { setSelectedLocation } = useLocation();
 
   // marker groups & intervals
   const pollutionMarkers = useRef([]); // [{ marker, meta }]
@@ -266,6 +268,10 @@ export function LiveMap() {
         const popup = userMarker.current.getPopup();
         if (popup) popup.setHTML(popupHTML("You are here", Math.round(accuracy ?? 0)));
       }
+      // update context with current user location (name is optional)
+      try {
+        setSelectedLocation({ name: "Your location", latitude: lat, longitude: lng });
+      } catch (e) {}
     }
 
     // ---------- Pollution + Heatmap ----------
@@ -579,6 +585,10 @@ export function LiveMap() {
       lastReseedCenter.current = [res.lon, res.lat];
       // seed pollution + eco for that searched region
       startPollutionAndEcoUpdater(res.lon, res.lat);
+      // update selected location in context
+      try {
+        setSelectedLocation({ name: res.address || q, latitude: res.lat, longitude: res.lon });
+      } catch (e) {}
     }
 
     btn.addEventListener("click", runSearchOnce);
@@ -597,6 +607,7 @@ export function LiveMap() {
         map.current.flyTo({ center: [lng, lat], zoom: 13, essential: true });
         lastReseedCenter.current = [lng, lat];
         startPollutionAndEcoUpdater(lng, lat);
+        try { setSelectedLocation({ name: "Your location", latitude: lat, longitude: lng }); } catch (e) {}
       } else {
         // if no user marker yet, try to use geolocation to fetch once
         navigator.geolocation.getCurrentPosition(
@@ -605,12 +616,28 @@ export function LiveMap() {
             map.current.flyTo({ center: [longitude, latitude], zoom: 13, essential: true });
             lastReseedCenter.current = [longitude, latitude];
             startPollutionAndEcoUpdater(longitude, latitude);
+            try { setSelectedLocation({ name: "Your location", latitude, longitude }); } catch (e) {}
           },
           (err) => console.error("Locate error", err),
           { enableHighAccuracy: true, timeout: 7000 }
         );
       }
     });
+
+    // Map click to select arbitrary location
+    function onMapClick(e) {
+      try {
+        const lngLat = e.lngLat || (e.coordinates ? { lng: e.coordinates[0], lat: e.coordinates[1] } : null);
+        if (!lngLat) return;
+        const { lng, lat } = lngLat;
+        isFollowingUserRef.current = false;
+        lastReseedCenter.current = [lng, lat];
+        startPollutionAndEcoUpdater(lng, lat);
+        setSelectedLocation({ name: `Selected: ${lng.toFixed(4)}, ${lat.toFixed(4)}` , latitude: lat, longitude: lng });
+        map.current.flyTo({ center: [lng, lat], zoom: 13, essential: true });
+      } catch (e) {}
+    }
+    map.current.on("click", onMapClick);
 
     // ---------- ensure heat layer exists on load ----------
     map.current.on("load", () => {
@@ -656,6 +683,7 @@ export function LiveMap() {
       // remove heat source & layer
       try {
         if (map.current) {
+          try { map.current.off("click", onMapClick); } catch (e) {}
           if (map.current.getLayer && map.current.getLayer("pollution-heat")) map.current.removeLayer("pollution-heat");
           if (map.current.getSource && map.current.getSource("pollution-data")) map.current.removeSource("pollution-data");
           map.current.remove();
