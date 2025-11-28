@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import tt from "@tomtom-international/web-sdk-maps";
 import "@tomtom-international/web-sdk-maps/dist/maps.css";
 
-export function LiveMap() {
+export function LiveMap({ onLocationChange, onCenterChange, center }) {
   const mapElement = useRef(null);
   const map = useRef(null);
   const userMarker = useRef(null);
@@ -38,7 +38,7 @@ export function LiveMap() {
     map.current = tt.map({
       key: API_KEY,
       container: mapElement.current,
-      center: FALLBACK_CENTER,
+      center: center ? [center.lng, center.lat] : FALLBACK_CENTER,
       zoom: 11,
       style: { map: "basic_main" },
     });
@@ -61,9 +61,9 @@ export function LiveMap() {
     const input = document.createElement("input");
     input.type = "search";
     input.placeholder = "Search location (city, locality...)";
-    input.style.color = "#0b1220";           // main input text
-    input.style.background = "rgba(255,255,255,0.95)"; // optional — makes input stand out
-    input.style.caretColor = "#0b1220";        
+    input.style.color = "#0b1220";
+    input.style.background = "rgba(255,255,255,0.95)";
+    input.style.caretColor = "#0b1220";
     input.style.padding = "8px 10px";
     input.style.borderRadius = "8px";
     input.style.border = "1px solid rgba(15,23,42,0.08)";
@@ -463,6 +463,10 @@ export function LiveMap() {
         startPollutionAndEcoUpdater(centerLng, centerLat);
         // when user pans manually, we stop following the user
         isFollowingUserRef.current = false;
+        // notify parent of center change
+        try {
+          if (typeof onCenterChange === "function") onCenterChange({ lat: centerLat, lng: centerLng });
+        } catch (e) {}
       }
     }
 
@@ -489,6 +493,12 @@ export function LiveMap() {
             // if following user, update pollution/eco around user
             startPollutionAndEcoUpdater(longitude, latitude);
           }
+
+          // notify parent about user location change
+          try {
+            if (typeof onLocationChange === "function")
+              onLocationChange({ lat: latitude, lng: longitude });
+          } catch (e) {}
         },
         (error) => {
           console.error("⚠️ Geolocation error:", error.message);
@@ -516,7 +526,6 @@ export function LiveMap() {
         if (!res.ok) throw new Error("Geocoding failed");
         const data = await res.json();
         if (!data || !data.results || !data.results.length) return null;
-        // TomTom v2 geocode: results[0].position.lat / lon (if not present may have 'position' or 'lat/lon' fields)
         const r = data.results[0];
         const lat = r.position?.lat ?? (r.lat ?? null);
         const lon = r.position?.lon ?? (r.lon ?? r.position?.lon ?? null);
@@ -579,6 +588,11 @@ export function LiveMap() {
       lastReseedCenter.current = [res.lon, res.lat];
       // seed pollution + eco for that searched region
       startPollutionAndEcoUpdater(res.lon, res.lat);
+
+      // notify parent about center change because of search
+      try {
+        if (typeof onCenterChange === "function") onCenterChange({ lat: res.lat, lng: res.lon });
+      } catch (e) {}
     }
 
     btn.addEventListener("click", runSearchOnce);
@@ -590,13 +604,22 @@ export function LiveMap() {
     });
 
     // locate button: resume following user and center on current user marker if present
-    locateBtn.addEventListener("click", () => {
+    function onLocateClick() {
       isFollowingUserRef.current = true;
       if (userMarker.current) {
         const [lng, lat] = userMarker.current.getLngLat().toArray();
         map.current.flyTo({ center: [lng, lat], zoom: 13, essential: true });
         lastReseedCenter.current = [lng, lat];
         startPollutionAndEcoUpdater(lng, lat);
+
+        // notify parent about location (user located)
+        try {
+          if (typeof onLocationChange === "function") onLocationChange({ lat, lng });
+        } catch (e) {}
+        // also notify center change
+        try {
+          if (typeof onCenterChange === "function") onCenterChange({ lat, lng });
+        } catch (e) {}
       } else {
         // if no user marker yet, try to use geolocation to fetch once
         navigator.geolocation.getCurrentPosition(
@@ -605,17 +628,31 @@ export function LiveMap() {
             map.current.flyTo({ center: [longitude, latitude], zoom: 13, essential: true });
             lastReseedCenter.current = [longitude, latitude];
             startPollutionAndEcoUpdater(longitude, latitude);
+
+            try {
+              if (typeof onLocationChange === "function") onLocationChange({ lat: latitude, lng: longitude });
+            } catch (e) {}
+            try {
+              if (typeof onCenterChange === "function") onCenterChange({ lat: latitude, lng: longitude });
+            } catch (e) {}
           },
           (err) => console.error("Locate error", err),
           { enableHighAccuracy: true, timeout: 7000 }
         );
       }
-    });
+    }
+
+    locateBtn.addEventListener("click", onLocateClick);
 
     // ---------- ensure heat layer exists on load ----------
     map.current.on("load", () => {
       buildHeatLayerIfMissing();
       console.log("✅ TomTom Map Loaded Successfully");
+      // notify parent about initial center
+      try {
+        const c = map.current.getCenter();
+        if (typeof onCenterChange === "function") onCenterChange({ lat: c.lat, lng: c.lng });
+      } catch (e) {}
     });
     map.current.on("error", (e) => console.error("TomTom Map Error:", e));
 
@@ -624,8 +661,8 @@ export function LiveMap() {
       // remove UI controls
       try {
         btn.removeEventListener("click", runSearchOnce);
-        input.removeEventListener("keydown", () => {});
-        locateBtn.removeEventListener("click", () => {});
+        input.removeEventListener("keydown", (e) => {});
+        locateBtn.removeEventListener("click", onLocateClick);
         if (controlWrapper && controlWrapper.parentNode) controlWrapper.parentNode.removeChild(controlWrapper);
       } catch (e) {}
 
@@ -663,7 +700,7 @@ export function LiveMap() {
       } catch (e) {}
       map.current = null;
     };
-  }, []);
+  }, []); // run once
 
   return (
     <div
