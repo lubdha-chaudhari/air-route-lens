@@ -60,10 +60,9 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Live Map + Quick Stats */}
+      {/* Live Map (expanded to take Quick Stats area) */}
       <div className="grid gap-6 lg:grid-cols-3 relative z-10">
-        {/* Live Map Section */}
-        <Card className="lg:col-span-2 border-2 glass glow">
+        <Card className="lg:col-span-3 border-2 glass glow">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -90,7 +89,7 @@ export default function Dashboard() {
           </CardHeader>
 
           <CardContent>
-            {/* ✅ Live Map Component Here */}
+            {/* Live Map Component Here */}
             <div className="relative aspect-video rounded-lg overflow-hidden border-2 border-primary/30">
               <LiveMap />
             </div>
@@ -108,57 +107,6 @@ export default function Dashboard() {
               <Button variant="outline" size="sm">
                 <div className="w-3 h-3 rounded-full bg-destructive mr-2" />
                 Unhealthy (100+)
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Stats Section */}
-        <Card className="border-2 glass glow">
-          <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-            <CardDescription>Today's environmental metrics</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* PM2.5 */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">PM2.5 Level</span>
-                <span className="font-semibold text-destructive">High</span>
-              </div>
-              <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-alert w-3/4" />
-              </div>
-            </div>
-
-            {/* NO2 */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">NO₂ Concentration</span>
-                <span className="font-semibold text-warning">Moderate</span>
-              </div>
-              <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div className="h-full bg-warning w-1/2" />
-              </div>
-            </div>
-
-            {/* CO2 */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">CO₂ Emissions</span>
-                <span className="font-semibold text-foreground">
-                  5.2 tons/day
-                </span>
-              </div>
-              <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-primary w-2/3" />
-              </div>
-            </div>
-
-            {/* Button */}
-            <div className="pt-4 border-t">
-              <Button className="w-full bg-gradient-primary hover:opacity-90 shadow-glow transition-all hover:shadow-glow-strong">
-                View Detailed Report
               </Button>
             </div>
           </CardContent>
