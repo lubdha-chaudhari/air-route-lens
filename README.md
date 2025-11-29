@@ -1,73 +1,262 @@
-# Welcome to your Lovable project
+GeoSense – Traffic & Environmental Impact: Geo-Intelligence Dashboard
 
-## Project info
+A real-time platform that analyzes traffic patterns, mobility data, and environmental indicators to reveal how traffic affects air pollution, fuel wastage, and emissions — with correlations, forecasts, and eco-routing powered by TomTom.
 
-**URL**: https://lovable.dev/projects/71c4ba57-2690-46c4-a94f-2d226c84c34d
+🚀 Problem Statement
 
-## How can I edit this code?
+Traffic & Environmental Impact: Geo-Intelligence Dashboard (Code: 304 – Hard)
+Build a platform that analyzes traffic patterns and mobility data to understand how traffic affects the environment, including air pollution, noise, and fuel consumption. Visualize correlations between congestion hotspots and environmental degradation. The project can be expanded with predictive analytics, sustainable mobility planning, and clean route optimization.
 
-There are several ways of editing your application.
+💡 What GeoSense Does
 
-**Use Lovable**
+GeoSense connects TomTom traffic intelligence with global AQI datasets to deliver:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/71c4ba57-2690-46c4-a94f-2d226c84c34d) and start prompting.
+Real-time AQI, traffic congestion, CO₂ emissions, and fuel wastage
 
-Changes made via Lovable will be committed automatically to this repo.
+Dynamic analytics for any selected location
 
-**Use your preferred IDE**
+Correlation insights between traffic and pollution
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Historical AQI trends
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Environmental reports with PDF export
 
-Follow these steps:
+6-hour AQI prediction
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Eco-Route planning based on pollution levels
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+This turns raw traffic behavior into environmental intelligence that helps citizens & city planners.
 
-# Step 3: Install the necessary dependencies.
-npm i
+🗂 Project Structure
+geosense/
+│
+├── frontend/                 # React + Vite frontend (UI, maps, charts)
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── utils/
+│   │   └── App.jsx
+│   └── package.json
+│
+├── backend/                  # Python backend (FastAPI/Flask)
+│   ├── app.py                # Main API entrypoint
+│   ├── services/
+│   │   ├── tomtom_service.py
+│   │   ├── waqi_service.py
+│   │   ├── openaq_service.py
+│   │   └── prediction_model.py
+│   ├── requirements.txt
+│   └── README.md
+│
+└── README.md                 # Main project documentation
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+🔧 Tech Stack
+Frontend
+
+React + Vite
+
+TomTom Maps SDK
+
+Recharts / Chart.js
+
+Axios
+
+TailwindCSS
+
+Backend
+
+Python (Flask or FastAPI)
+
+TomTom Traffic API
+
+WAQI API
+
+OpenAQ API
+
+Pandas, NumPy (data processing)
+
+Scikit-learn / statsmodels (prediction)
+
+🌍 APIs Used
+🟦 TomTom (Primary source)
+
+Traffic Flow API
+
+Traffic Incidents API
+
+Routing API
+
+Maps SDK
+
+Used for:
+✔ Congestion %
+✔ Traffic speed
+✔ Incident overlays
+✔ Route planning
+✔ Navigation + map layers
+
+🟩 WAQI (World Air Quality Index)
+
+Used for:
+✔ Current AQI
+✔ PM2.5, PM10, NO₂
+✔ Real-time pollutant values
+
+🟧 OpenAQ
+
+Used for:
+✔ 24-hour pollutant history
+✔ Trends & insights
+✔ Hourly AQI charts
+
+🖥 Features (Day 1 + Day 2)
+✅ Dashboard (Completed)
+
+User's live location
+
+AQI markers (Good / Moderate / Unhealthy)
+
+Traffic congestion %
+
+Fuel wastage estimate
+
+CO₂ emission estimate
+
+Active alerts
+
+Location search + dynamic updates
+
+✅ Analytics (Completed)
+
+Location-aware dashboard
+
+AQI 24-hour trend
+
+Congestion vs Fuel Wastage
+
+Traffic speed vs CO₂
+
+Auto-generated insights
+
+Data from WAQI, OpenAQ & TomTom
+
+🔄 EcoReport (In Progress)
+
+Real-time AQI
+
+Monthly summary
+
+Correlation insights
+
+Pollution hotspots
+
+Recommendations
+
+PDF export
+
+🔮 Prediction (In Progress)
+
+6-hour AQI forecast
+
+Predicted alerts
+
+Trend visualization
+
+🛣 EcoRoute (In Progress)
+
+Cleanest route
+
+Traffic-aware AQI scoring
+
+Emission-optimized routing
+
+🏁 Getting Started
+▶️ 1. Clone the repository
+git clone https://github.com/your-username/geosense.git
+cd geosense
+
+🔧 Backend Setup (Python)
+
+Navigate into the backend folder:
+
+cd backend
+
+📦 Install dependencies:
+pip install -r requirements.txt
+
+▶ Run the backend:
+python app.py
+
+
+Your backend will start at:
+http://localhost:5000
+
+(or whichever port your app uses)
+
+🎨 Frontend Setup (React + Vite)
+
+Navigate to frontend folder:
+
+cd frontend
+
+📦 Install dependencies:
+npm install
+
+▶ Run the development server:
 npm run dev
-```
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Your frontend will start at:
+http://localhost:5173
 
-**Use GitHub Codespaces**
+🔌 Connecting Frontend & Backend
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+In /frontend/src/utils/api.js (or equivalent):
 
-## What technologies are used for this project?
+export const BASE_URL = "http://localhost:5000";
 
-This project is built with:
+🧪 Testing the APIs
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Once backend is running, test endpoints:
 
-## How can I deploy this project?
+Current AQI
+GET /aqi?location=Bangalore
 
-Simply open [Lovable](https://lovable.dev/projects/71c4ba57-2690-46c4-a94f-2d226c84c34d) and click on Share -> Publish.
+Traffic Congestion
+GET /traffic?lat=12.9&lon=77.6
 
-## Can I connect a custom domain to my Lovable project?
+Analytics
+GET /analytics?lat=...&lon=...
 
-Yes, you can!
+Prediction
+GET /predict?lat=...&lon=...
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+If these return JSON, your setup is correct.
+
+📊 Screenshots (Add once ready)
+📸 Dashboard Preview  
+📸 Analytics Page  
+📸 EcoReport  
+📸 EcoRoute  
+
+🧭 Future Enhancements
+
+Hotspot detection
+
+Noise-level integration
+
+City planning simulation
+
+Time-series model upgrade (LSTM / XGBoost)
+
+Real-time push notifications
+
+🤝 Contributors
+
+Team GeoSense
+Lubdha Chaudhari
+Nikita Salunke
+Nirwani Adhau
+Sanika Pawar
+Sneha Khatave
